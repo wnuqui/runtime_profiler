@@ -1,0 +1,5 @@
+#!/usr/bin/env ruby
+require_relative '../lib/runtime_profiler/cli'
+
+cli = RuntimeProfiler::CLI.new
+cli.run
