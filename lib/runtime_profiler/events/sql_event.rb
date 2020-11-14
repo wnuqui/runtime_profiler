@@ -1,3 +1,5 @@
+require 'digest'
+
 module RuntimeProfiler
   class SqlEvent
     attr_reader :started_at, :finished_at, :payload, :trace
