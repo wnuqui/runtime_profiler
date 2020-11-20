@@ -5,8 +5,14 @@ agent:
     type: e1-standard-2
     os_image: ubuntu1804
 blocks:
-  - name: rspec
+  - name: test
     task:
       jobs:
-        - name: bundle install && bundle exec rspec
-          commands: []
+        - name: test
+          commands:
+            - checkout
+            - sem-version ruby 2.6.5
+            - cache restore
+            - bundle install --path vendor/bundle
+            - cache store
+            - bundle exec rake
