@@ -1,4 +1,4 @@
-# runtime_profiler - Runtime Profiler for Rails Applications
+# runtime_profiler - Runtime Profiler for Rails Applications [![Build Status](https://wnuqui.semaphoreci.com/badges/runtime_profiler/branches/master.svg?style=shields)](https://wnuqui.semaphoreci.com/projects/runtime_profiler)
 
 `runtime_profiler` instruments api or a method of your Rails application using Rails' `ActiveSupport::Notifications`
 
