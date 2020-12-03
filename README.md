@@ -1,12 +1,8 @@
 # runtime_profiler - Runtime Profiler for Rails Applications [![Build Status](https://wnuqui.semaphoreci.com/badges/runtime_profiler/branches/master.svg?style=shields)](https://wnuqui.semaphoreci.com/projects/runtime_profiler)
 
-`runtime_profiler` instruments api or a method of your Rails application using Rails' `ActiveSupport::Notifications`
+`runtime_profiler` instruments API endpoints or methods in your Rails application using Rails' `ActiveSupport::Notifications`
 
 It then aggregates and generates report to give you insights about specific calls in your Rails application.
-
-## Note
-
-This is still a **work in progress**. However, this is a tool meant to be used in development so it is safe to use.
 
 ## Installation
 
@@ -25,9 +21,9 @@ And then execute:
 
 ## Profiling/Instrumenting
 
-To start profiling, make a test and use `RuntimeProfiler.profile!` method in the tests. The output of instrumentation will be generated under the `tmp` folder of your application.
+To start profiling, you can make a test and use `RuntimeProfiler.profile!` method in the test. The output of instrumentation will be generated under the `tmp` folder of your application.
 
-Example:
+Example of a test code wrap by `RuntimeProfiler.profile!` method:
 ```ruby
 it 'updates user' do
   RuntimeProfiler.profile!('updates user', [User]) {
@@ -40,12 +36,62 @@ end
 
 Run tests as usual and follow printed instructions after running tests.
 
-## Reporting
+If you prefer writing just a snippet of code, then just wrap the snippet with `RuntimeProfiler.profile!` method:
+```ruby
+RuntimeProfiler.profile!('UserMailer', [UserMailer]) {
+  user = User.last
+  UserMailer.with(user: user).weekly_summary.deliver_now
+}
+```
 
-To see profiling/instrumenting report, please open the report in browser with JSON viewer report. Or you can run the following command:
+**Note:** The code (tests or not) where `RuntimeProfiler.profile!` is used must be **free from any mocking** since your goal is to check bottlenecks.
+
+## Viewing Profiling Result
+
+To see profiling/instrumenting report, you can open the report in browser with JSON viewer report. Or you can run the following command:
 
 ```bash
 bundle exec runtime_profiler view ~/the-rails-app/tmp/runtime-profiling-51079-1521371428.json
+```
+
+### view options
+
+Here are the command line options for `runtime_profiler view` command.
+
+```bash
+$ bundle exec runtime_profiler view --help
+
+  NAME:
+
+    view
+
+  SYNOPSIS:
+
+    runtime_profiler view <profile.report.json> [options]
+
+  DESCRIPTION:
+
+    Display report in console given the JSON report file
+
+  OPTIONS:
+
+    --sort-by COLUMN
+        Sort by COLUMN. COLUMN can either be "total_calls" or "total_runtime". Default is "total_calls".
+
+    --details TYPE
+        TYPE can be "full" or "summary". Default is "summary".
+
+    --runtime-above RUNTIME
+        RUNTIME is integer or float value in ms.
+
+    --only-sqls
+        Show only SQL(s).
+
+    --only-methods
+        Show only method(s).
+
+    --calls-above CALLS
+        CALLS is integer value.
 ```
 
 ## Configurations
