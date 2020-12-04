@@ -173,7 +173,7 @@ module RuntimeProfiler
 
       instrumented_sql_calls = runtime_above(instrumented_sql_calls) if options.runtime_above.presence > 0
       instrumented_sql_calls = calls_above(instrumented_sql_calls) if options.calls_above.presence > 0
-      instrumented_sql_calls = sort(instrumented_sql_calls)
+      instrumented_sql_calls = sort(instrumented_sql_calls, false)
 
       table = Terminal::Table.new do |t|
         t.headings = ['Count', 'Total Runtime (ms)', 'Average Runtime (ms)', 'SQL Query', 'Source']
@@ -231,8 +231,21 @@ module RuntimeProfiler
       end
     end
 
-    def sort(data)
-      data.sort_by { |d| options.sort_by == 'total_runtime' ?  -d['total_runtime'] : -d['total_calls'] }
+    def sort(data, methods=true)
+      if methods
+        data.sort_by do |d|
+          if options.sort_by == 'max_runtime'
+            -d['max']
+          elsif options.sort_by == 'total_runtime'
+            -d['total_runtime']
+          elsif options.sort_by == 'total_calls'
+            -d['total_calls']
+          end
+        end
+      else
+         options.sort_by = 'total_runtime' if options.sort_by == 'max_runtime'
+        data.sort_by { |d| options.sort_by == 'total_runtime' ?  -d['total_runtime'] : -d['total_calls'] }
+      end
     end
 
     def runtime_above(data)

@@ -16,7 +16,7 @@ module RuntimeProfiler
         c.syntax = 'runtime_profiler view <profile.report.json> [options]'
         c.description = 'Display report in console given the JSON report file'
 
-        c.option '--sort-by COLUMN',        String,   'Sort by COLUMN. COLUMN can either be "total_calls" or "total_runtime". Default is "total_runtime".'
+        c.option '--sort-by COLUMN',        String,   'Sort by COLUMN. COLUMN can be "max_runtime", total_calls" or "total_runtime". Default is "max_runtime".'
         c.option '--details TYPE',          String,   'TYPE can be "full" or "summary". Default is "summary"'
         c.option '--only-sqls',             String,   'Show only SQL queries. Default is false.'
         c.option '--only-methods',          String,   'Show only methods. Default is false.'
@@ -26,7 +26,7 @@ module RuntimeProfiler
 
         c.action do |args, options|
           default_options = {
-            sort_by: 'total_runtime',
+            sort_by: 'max_runtime',
             details: 'summary',
             runtime_above: 0,
             only_sqls: false,

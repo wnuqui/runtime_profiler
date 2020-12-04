@@ -76,7 +76,7 @@ $ bundle exec runtime_profiler view --help
   OPTIONS:
 
     --sort-by COLUMN
-        Sort by COLUMN. COLUMN can either be "total_calls" or "total_runtime". Default is "total_runtime".
+        Sort by COLUMN. COLUMN can be "max_runtime", total_calls" or "total_runtime". Default is "max_runtime".
 
     --details TYPE
         TYPE can be "full" or "summary". Default is "summary"
