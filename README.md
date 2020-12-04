@@ -76,25 +76,25 @@ $ bundle exec runtime_profiler view --help
   OPTIONS:
 
     --sort-by COLUMN
-        Sort by COLUMN. COLUMN can either be "total_calls" or "total_runtime". Default is "total_calls".
+        Sort by COLUMN. COLUMN can either be "total_calls" or "total_runtime". Default is "total_runtime".
 
     --details TYPE
-        TYPE can be "full" or "summary". Default is "summary".
+        TYPE can be "full" or "summary". Default is "summary"
+
+    --only-sqls
+        Show only SQL queries. Default is false.
+
+    --only-methods
+        Show only methods. Default is false.
 
     --runtime-above RUNTIME
         RUNTIME is integer or float value in ms.
-
-    --only-sqls
-        Show only SQL(s).
-
-    --only-methods
-        Show only method(s).
 
     --calls-above CALLS
         CALLS is integer value.
 
     --rounding ROUNDING
-        ROUNDING is integer value.
+        ROUNDING is integer value. Used in rounding runtimes. Default is 4.
 ```
 
 ## Configurations
