@@ -1,6 +1,6 @@
 # runtime_profiler - Runtime Profiler for Rails Applications [![Build Status](https://wnuqui.semaphoreci.com/badges/runtime_profiler/branches/master.svg?style=shields)](https://wnuqui.semaphoreci.com/projects/runtime_profiler)
 
-`runtime_profiler` instruments API endpoints or methods in your Rails application using Rails' `ActiveSupport::Notifications`
+`runtime_profiler` instruments API endpoints or methods in your Rails application using Rails' `ActiveSupport::Notifications`. Currently, it is intended to be used during development or test.
 
 It then aggregates and generates report to give you insights about specific calls in your Rails application.
 
@@ -21,7 +21,7 @@ And then execute:
 
 ## Profiling/Instrumenting
 
-To start profiling, you can make a test and use `RuntimeProfiler.profile!` method in the test. The output of instrumentation will be generated under the `tmp` folder of your application.
+To start profiling, you can make a test that targets a particular endpoint and use `RuntimeProfiler.profile!` method in the test. The output of instrumentation will be generated under the `tmp` folder of your application.
 
 Example of a test code wrap by `RuntimeProfiler.profile!` method:
 ```ruby
@@ -34,9 +34,9 @@ it 'updates user' do
 end
 ```
 
-Run tests as usual and follow printed instructions after running tests.
+Run the test as usual and follow printed instructions after running.
 
-If you prefer writing just a snippet of code, then just wrap the snippet with `RuntimeProfiler.profile!` method:
+If you prefer writing just code snippet, then just wrap the snippet with `RuntimeProfiler.profile!` method:
 ```ruby
 RuntimeProfiler.profile!('UserMailer', [UserMailer]) {
   user = User.last

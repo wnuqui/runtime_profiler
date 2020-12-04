@@ -41,7 +41,8 @@ module RuntimeProfiler
         f.write JSON.dump(instrumentation_data)
       end
 
-      puts '~~~~> [ Profiling RUNTIME ] Profiling now COMPLETE and JSON report written at ' + output_file.to_s
+      puts "\n"
+      puts '~~~~> [ Profiling RUNTIME ] Profiling now COMPLETE and JSON report is written at ' + output_file.to_s
       puts '~~~~> [ Profiling RUNTIME ]'
       puts '~~~~> [ Profiling RUNTIME ] You can do the following to view the JSON report in console:'
       puts '~~~~> [ Profiling RUNTIME ]'

@@ -41,17 +41,5 @@ module RuntimeProfiler
 
       profiler.save_instrumentation_data
     end
-
-    def runtime(label='for the block')
-      result = nil
-
-      elapsed_time = Benchmark.realtime { result = yield }
-
-      puts
-      puts '~~~~> ELAPSED TIME (%s): %s' % [label, elapsed_time * 1000]
-      puts
-
-      result
-    end
   end
 end
