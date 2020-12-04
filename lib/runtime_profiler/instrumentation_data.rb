@@ -3,12 +3,15 @@ module RuntimeProfiler
     attr_reader :controller_data, :sql_data
 
     def initialize(controller_data: nil, sql_data: nil)
-      @controller_data = controller_data
+      @controller_data = controller_data || {}
       @sql_data = sql_data
     end
 
     def persist!
-      instrumented_api = [controller_data[:payload][:controller], controller_data[:payload][:action]].join('#')
+      instrumented_api = [
+        controller_data[:payload][:controller],
+        controller_data[:payload][:action]
+      ].join('#') if controller_data[:payload]
 
       instrumentation_data = {
         instrumentation: {
@@ -38,7 +41,8 @@ module RuntimeProfiler
         f.write JSON.dump(instrumentation_data)
       end
 
-      puts '~~~~> [ Profiling RUNTIME ] Profiling now COMPLETE and JSON report written at ' + output_file.to_s
+      puts "\n"
+      puts '~~~~> [ Profiling RUNTIME ] Profiling now COMPLETE and JSON report is written at ' + output_file.to_s
       puts '~~~~> [ Profiling RUNTIME ]'
       puts '~~~~> [ Profiling RUNTIME ] You can do the following to view the JSON report in console:'
       puts '~~~~> [ Profiling RUNTIME ]'
