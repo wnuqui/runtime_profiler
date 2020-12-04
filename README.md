@@ -92,11 +92,14 @@ $ bundle exec runtime_profiler view --help
 
     --calls-above CALLS
         CALLS is integer value.
+
+    --rounding ROUNDING
+        ROUNDING is integer value.
 ```
 
 ## Configurations
 
-All the configurable variables and their defaults are listed below:
+All the configurable variables and their defaults are listed below. These configurations can be put in the `config/initializers` folder of your Rails application.
 ```ruby
 RuntimeProfiler.output_path = File.join(Rails.root.to_s, 'tmp')
 RuntimeProfiler.instrumented_constants = [User]

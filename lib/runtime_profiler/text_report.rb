@@ -115,6 +115,10 @@ module RuntimeProfiler
       options.only_sqls.present? && options.only_methods.blank?
     end
 
+    def rounding
+      options.rounding
+    end
+
     def print_summary
       summary = if only_methods?
         METHODS_DETAILS_TEMPLATE % details_template_data
@@ -142,15 +146,15 @@ module RuntimeProfiler
       instrumented_methods = sort(instrumented_methods)
 
       table = Terminal::Table.new do |t|
-        t.headings = ['Method', 'Total Runtime (ms)', 'Total Calls', 'Min', 'Max']
+        t.headings = ['Method', 'Total Runtime (ms)', 'Total Calls', 'Min (ms)', 'Max (ms)']
 
         instrumented_methods.each_with_index do |row, index|
           t.add_row [
             row['method'],
-            row['total_runtime'],
+            row['total_runtime'].round(rounding),
             row['total_calls'],
-            row['min'],
-            row['max']
+            row['min'].round(rounding),
+            row['max'].round(rounding)
           ]
           t.add_separator if index < instrumented_methods.size - 1
         end
@@ -177,7 +181,8 @@ module RuntimeProfiler
         instrumented_sql_calls.each_with_index do |row, index|
           chopped_sql       = wrap_text(row['sql'], sql_width)
           source_list       = wrap_list(row['runtimes'].map { |runtime| runtime[1] }.uniq, sql_width - 15)
-          average_runtime   = row['average'].round(2)
+          average_runtime   = row['average'].round(rounding)
+          total_runtime     = row['total_runtime'].round(rounding)
           total_lines       = if chopped_sql.length >= source_list.length
                                 chopped_sql.length
                               else
@@ -187,7 +192,7 @@ module RuntimeProfiler
           (0...total_lines).each do |line|
             count         = line == 0                 ? row['total_calls']    : ''
             average       = line == 0                 ? average_runtime       : ''
-            total_runtime = line == 0                 ? row['total_runtime']  : ''
+            total_runtime = line == 0                 ? total_runtime  : ''
             source        = source_list.length > line ? source_list[line]     : ''
             query         = row['sql'].length > line  ? chopped_sql[line]     : ''
 
@@ -242,30 +247,30 @@ module RuntimeProfiler
       summary = data['instrumentation']['summary']
 
       template_data = [
-        summary['total_runtime'] ? summary['total_runtime'].round(2) : 'n/a',
-        summary['db_runtime'] ? summary['db_runtime'].round(2) : 'n/a',
-        summary['view_runtime'] ? summary['view_runtime'].round(2) : 'n/a'
+        summary['total_runtime'] ? summary['total_runtime'].round(rounding) : 'n/a',
+        summary['db_runtime'] ? summary['db_runtime'].round(rounding) : 'n/a',
+        summary['view_runtime'] ? summary['view_runtime'].round(rounding) : 'n/a'
       ]
 
       methods_data = [
         summary['slowest_method']['method'],
-        summary['slowest_method']['total_runtime'].round(2),
+        summary['slowest_method']['total_runtime'].round(rounding),
 
         summary['mostly_called_method']['method'],
         summary['mostly_called_method']['total_calls'],
-        summary['mostly_called_method']['total_runtime'].round(2)
+        summary['mostly_called_method']['total_runtime'].round(rounding)
       ]
 
       sqls_data = [
         summary['total_sql_calls'],
         summary['total_unique_sql_calls'],
 
-        summary['slowest_sql']['total_runtime'].round(2),
+        summary['slowest_sql']['total_runtime'].round(rounding),
         summary['slowest_sql']['sql'],
         summary['slowest_sql']['source'],
 
         summary['mostly_called_sql']['total_calls'],
-        summary['mostly_called_sql']['total_runtime'].round(2),
+        summary['mostly_called_sql']['total_runtime'].round(rounding),
         summary['mostly_called_sql']['sql'],
         summary['mostly_called_sql']['runtimes'].map { |runtime| runtime[1] }.uniq
       ]

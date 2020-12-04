@@ -22,6 +22,7 @@ module RuntimeProfiler
         c.option '--only-sqls',             String,   'Show only SQL(s).'
         c.option '--only-methods',          String,   'Show only method(s).'
         c.option '--calls-above CALLS',     Integer,  'CALLS is integer value.'
+        c.option '--rounding ROUNDING',     Integer,  'ROUNDING is integer value.'
 
         c.action do |args, options|
           default_options = {
@@ -30,7 +31,8 @@ module RuntimeProfiler
             runtime_above: 0,
             only_sqls: false,
             only_methods: false,
-            calls_above: 0
+            calls_above: 0,
+            rounding: 4
           }
 
           options.default default_options
