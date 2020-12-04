@@ -1,5 +1,4 @@
-# coding: utf-8
-lib = File.expand_path('../lib', __FILE__)
+lib = File.expand_path('lib', __dir__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require 'runtime_profiler/version'
 
@@ -19,15 +18,16 @@ Gem::Specification.new do |spec|
   spec.executables   = ['runtime_profiler']
   spec.require_paths = ['lib']
 
-  spec.add_development_dependency 'bundler'
-  spec.add_development_dependency 'rake', '>= 12.3.3'
-  spec.add_development_dependency 'minitest', '~> 5.0'
   spec.add_development_dependency 'activesupport', '>= 3.0.0'
-  spec.add_development_dependency 'pry'
+  spec.add_development_dependency 'bundler'
+  spec.add_development_dependency 'minitest', '~> 5.0'
   spec.add_development_dependency 'minitest-line'
-  spec.add_runtime_dependency 'terminal-table'
+  spec.add_development_dependency 'pry'
+  spec.add_development_dependency 'rake', '>= 12.3.3'
+  spec.add_development_dependency 'rubocop'
   spec.add_runtime_dependency 'commander'
+  spec.add_runtime_dependency 'defined_methods'
   spec.add_runtime_dependency 'hirb'
   spec.add_runtime_dependency 'method_meter'
-  spec.add_runtime_dependency 'defined_methods'
+  spec.add_runtime_dependency 'terminal-table'
 end

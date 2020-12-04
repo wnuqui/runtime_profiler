@@ -12,6 +12,7 @@ module RuntimeProfiler
       def call(*args)
         event = RuntimeProfiler::ProcessActionEvent.new(args: args)
         return unless event.recordable?
+
         add event
       end
 

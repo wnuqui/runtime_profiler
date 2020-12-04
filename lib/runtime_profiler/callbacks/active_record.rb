@@ -26,12 +26,12 @@ module RuntimeProfiler
 
         @data[key][:sql]      = event.sanitized_sql
         @data[key][:runtimes] = [
-          [ event.total_runtime, event.trace.first ]
+          [event.total_runtime, event.trace.first]
         ]
       end
 
       def update(event)
-        @data[event.key][:runtimes] << [ event.total_runtime, event.trace.first ]
+        @data[event.key][:runtimes] << [event.total_runtime, event.trace.first]
       end
     end
   end

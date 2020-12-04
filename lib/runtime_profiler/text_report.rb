@@ -26,12 +26,12 @@ module RuntimeProfiler
         \e[1mSQL CALLS\e[22m
           Total             : %s
           Total Unique      : %s
-          
+
           \e[1mSLOWEST\e[22m
             Total Runtime   : %s ms
             SQL             : %s
             Source          : %s
-          
+
           \e[1mMOSTLY CALLED\e[22m
             Total Calls     : %s
             Total Runtime   : %s ms
@@ -86,7 +86,7 @@ module RuntimeProfiler
     attr_accessor :data, :options
 
     def initialize(json_file, options)
-      self.data = JSON.parse( File.read(json_file) )
+      self.data = JSON.parse(File.read(json_file))
       self.options = options
     end
 
@@ -121,12 +121,12 @@ module RuntimeProfiler
 
     def print_summary
       summary = if only_methods?
-        METHODS_DETAILS_TEMPLATE % details_template_data
-      elsif only_sqls?
-        SQLS_DETAILS_TEMPLATE % details_template_data
-      else
-        FULL_DETAILS_TEMPLATE % details_template_data
-      end
+                  METHODS_DETAILS_TEMPLATE % details_template_data
+                elsif only_sqls?
+                  SQLS_DETAILS_TEMPLATE % details_template_data
+                else
+                  FULL_DETAILS_TEMPLATE % details_template_data
+                end
       puts summary
     end
 
@@ -158,7 +158,6 @@ module RuntimeProfiler
           ]
           t.add_separator if index < instrumented_methods.size - 1
         end
-
       end
 
       puts
@@ -192,7 +191,7 @@ module RuntimeProfiler
           (0...total_lines).each do |line|
             count         = line == 0                 ? row['total_calls']    : ''
             average       = line == 0                 ? average_runtime       : ''
-            total_runtime = line == 0                 ? total_runtime  : ''
+            total_runtime = line == 0                 ? total_runtime : ''
             source        = source_list.length > line ? source_list[line]     : ''
             query         = row['sql'].length > line  ? chopped_sql[line]     : ''
 
@@ -203,7 +202,6 @@ module RuntimeProfiler
           t.add_row []
           t.add_separator if index < instrumented_sql_calls.size - 1
         end
-
       end
 
       puts
@@ -215,6 +213,7 @@ module RuntimeProfiler
 
     def wrap_text(text, width)
       return [text] if text.length <= width
+
       text.scan(/.{1,#{width}}/)
     end
 
@@ -231,7 +230,7 @@ module RuntimeProfiler
       end
     end
 
-    def sort(data, methods=true)
+    def sort(data, methods = true)
       if methods
         data.sort_by do |d|
           if options.sort_by == 'max_runtime'
@@ -243,8 +242,8 @@ module RuntimeProfiler
           end
         end
       else
-         options.sort_by = 'total_runtime' if options.sort_by == 'max_runtime'
-        data.sort_by { |d| options.sort_by == 'total_runtime' ?  -d['total_runtime'] : -d['total_calls'] }
+        options.sort_by = 'total_runtime' if options.sort_by == 'max_runtime'
+        data.sort_by { |d| options.sort_by == 'total_runtime' ? -d['total_runtime'] : -d['total_calls'] }
       end
     end
 

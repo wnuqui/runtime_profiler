@@ -23,12 +23,12 @@ module RuntimeProfiler
       @active_record_callback = Callback::ActiveRecord.new
 
       @subscribers << ActiveSupport::Notifications
-        .subscribe('sql.active_record', @active_record_callback)
+                      .subscribe('sql.active_record', @active_record_callback)
 
       @action_controller_callback = Callback::ActionController.new
 
       @subscribers << ActiveSupport::Notifications
-        .subscribe('process_action.action_controller', @action_controller_callback)
+                      .subscribe('process_action.action_controller', @action_controller_callback)
     end
 
     def unsubscribe_to_event_notifications
@@ -38,16 +38,16 @@ module RuntimeProfiler
     end
 
     def prepare_methods_to_instrument
-      self.instrumented_constants.flatten
-        .each { |constant| MethodMeter.observe(constant) }
+      instrumented_constants.flatten
+                            .each { |constant| MethodMeter.observe(constant) }
     end
 
     def save_instrumentation_data
       unsubscribe_to_event_notifications
 
       instrumentation_data = RuntimeProfiler::InstrumentationData.new \
-         controller_data: @action_controller_callback.controller_data,
-                sql_data: @active_record_callback.data
+        controller_data: @action_controller_callback.controller_data,
+        sql_data: @active_record_callback.data
 
       instrumentation_data.persist!
     end
