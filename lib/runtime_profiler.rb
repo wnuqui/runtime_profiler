@@ -19,7 +19,7 @@ module RuntimeProfiler
   end
 
   config_accessor :output_path do
-    if defined?(Rails) && Rails.respond_to?(:root)
+    if defined?(Rails) && Rails.respond_to?(:root) && Rails.root
       File.join(Rails.root.to_s, 'tmp')
     else
       'tmp'
