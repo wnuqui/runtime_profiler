@@ -15,7 +15,7 @@ Check which part of your Rails application is causing slow response time. **runt
     - [Examples](#examples)
   - [Viewing Profiling Result](#viewing-profiling-result)
     - [view Options](#view-options)
-  - [Configurations](#configuration)
+  - [Configurations](#configurations)
 - [Development](#development)
 - [Contributing](#contributing)
 - [Acknowledgement](#acknowledgement)
