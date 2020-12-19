@@ -8,12 +8,34 @@ module RuntimeProfiler
     end
 
     def persist!
-      instrumented_api = [
+      File.open(output_file, 'w') do |f|
+        f.write JSON.dump(instrumentation_data)
+      end
+
+      puts "\n"
+      puts 'Profiling data written at ' + output_file.to_s
+      puts 'You can view profiling data via: bundle exec runtime_profiler view ' + output_file.to_s
+      puts "\n"
+    end
+
+    private
+
+    def output_file
+      FileUtils.mkdir_p(RuntimeProfiler.output_path)
+      filename = ['rp', Process.pid, Time.now.to_i].join('-') + '.json'
+      File.join(RuntimeProfiler.output_path, filename)
+    end
+
+    def instrumented_api
+      return unless controller_data[:payload]
+      @instrumented_api ||= [
         controller_data[:payload][:controller],
         controller_data[:payload][:action]
-      ].join('#') if controller_data[:payload]
+      ].join('#')
+    end
 
-      instrumentation_data = {
+    def instrumentation_data
+      @instrumentation_data ||= {
         instrumentation: {
           instrumented_api: instrumented_api,
           summary: {
@@ -32,30 +54,7 @@ module RuntimeProfiler
           instrumented_at: Time.now
         }
       }
-
-      FileUtils.mkdir_p(RuntimeProfiler.output_path)
-      filename = ['runtime-profiling', Process.pid, Time.now.to_i].join('-') << '.json'
-      output_file = File.join(RuntimeProfiler.output_path, filename)
-
-      File.open(output_file, 'w') do |f|
-        f.write JSON.dump(instrumentation_data)
-      end
-
-      puts "\n"
-      puts '~~~~> [ Profiling RUNTIME ] Profiling now COMPLETE and JSON report is written at ' + output_file.to_s
-      puts '~~~~> [ Profiling RUNTIME ]'
-      puts '~~~~> [ Profiling RUNTIME ] You can do the following to view the JSON report in console:'
-      puts '~~~~> [ Profiling RUNTIME ]'
-      puts '~~~~> [ Profiling RUNTIME ]     bundle exec runtime_profiler view ' + output_file.to_s
-      puts '~~~~> [ Profiling RUNTIME ]'
-      puts '~~~~> [ Profiling RUNTIME ] Or'
-      puts '~~~~> [ Profiling RUNTIME ]'
-      puts '~~~~> [ Profiling RUNTIME ]     bundle exec runtime_profiler view --help'
-      puts '~~~~> [ Profiling RUNTIME ]'
-      puts '~~~~> [ Profiling RUNTIME ] for more details.'
     end
-
-    private
 
     def method_calls_data
       @method_calls_data ||= begin
