@@ -1,16 +1,35 @@
-# runtime_profiler - Runtime Profiler for Rails Applications [![Build Status](https://wnuqui.semaphoreci.com/badges/runtime_profiler/branches/master.svg?style=shields)](https://wnuqui.semaphoreci.com/projects/runtime_profiler)
+# runtime_profiler
 
-`runtime_profiler` instruments API endpoints or methods in your Rails application using Rails' `ActiveSupport::Notifications`. Currently, it is intended to be used during development or test.
+*A runtime profiler for Rails applications.*
 
-It then aggregates and generates report to give you insights about specific calls in your Rails application.
+Check which part of your Rails application is causing slow response time. **runtime_profiler** gives you an easy way to find performance problems by profiling an endpoint or a method in your Rails application.
 
-## Installation
+[![Build Status](https://wnuqui.semaphoreci.com/badges/runtime_profiler/branches/master.svg?style=shields)](https://wnuqui.semaphoreci.com/projects/runtime_profiler)
+
+## Table of contents
+
+- [Getting Started](#getting-started)
+  - [Installing](#installing)
+  - [Profiling](#profiling)
+    - [Structure](#structure)
+    - [Examples](#examples)
+  - [Viewing Profiling Result](#viewing-profiling-result)
+    - [view Options](#view-options)
+  - [Configurations](#configuration)
+- [Development](#development)
+- [Contributing](#contributing)
+- [Acknowledgement](#acknowledgement)
+- [License](#license)
+
+## Getting Started
+
+### Installing
 
 Add this line to your application's Gemfile:
 
 ```ruby
+# In your Gemfile
 group :development, :test do
-  ... ...
   gem 'runtime_profiler'
 end
 ```
@@ -19,13 +38,33 @@ And then execute:
 
     $ bundle
 
-## Profiling/Instrumenting
+Or install it yourself as:
 
-To start profiling, you can make a test that targets a particular endpoint and use `RuntimeProfiler.profile!` method in the test. The output of instrumentation will be generated under the `tmp` folder of your application.
+    $ gem install runtime_profiler
 
-Example of a test code wrap by `RuntimeProfiler.profile!` method:
+### Profiling
+
+#### Structure
+
+To profile a specific class (model, controller, etc), all you need to do is to wrap a line where the target class (or instance) is calling a method (entry point of profiling).
+
+```ruby
+# Profiles runtime of `ClassToProfile` class.
+RuntimeProfiler.profile!('description', [ClassToProfile]) {
+  # one line where `ClassToProfile` (or its instance) is calling a method
+}
+```
+
+Since the second argument of `.profile!` accepts array of classes, then you can provide all target classes that you want to profile.
+
+#### Examples
+
+You can make a test that targets a particular endpoint (or even just a method) and use `RuntimeProfiler.profile!` method in the test.
+
 ```ruby
 it 'updates user' do
+  # Profiles runtime of PUT /users/:id endpoint and
+  # specifically interested with the methods of `User` model.
   RuntimeProfiler.profile!('updates user', [User]) {
     patch :update, { id: user.id, name: 'Joe' }
   }
@@ -36,25 +75,26 @@ end
 
 Run the test as usual and follow printed instructions after running.
 
-If you prefer writing just code snippet, then just wrap the snippet with `RuntimeProfiler.profile!` method:
+Or if you prefer writing just code snippet, then just wrap the snippet with `RuntimeProfiler.profile!` method:
 ```ruby
+# Profiles runtime of `UserMailer` mailer.
 RuntimeProfiler.profile!('UserMailer', [UserMailer]) {
   user = User.last
   UserMailer.with(user: user).weekly_summary.deliver_now
 }
 ```
 
-**Note:** The code (tests or not) where `RuntimeProfiler.profile!` is used must be **free from any mocking** since your goal is to check bottlenecks.
+**Note:** The code (test or not) where `RuntimeProfiler.profile!` is used must be **free from any mocking/stubbing** since the goal is to check performance bottlenecks.
 
-## Viewing Profiling Result
+### Viewing Profiling Result
 
-To see profiling/instrumenting report, you can open the report in browser with JSON viewer report. Or you can run the following command:
+To see profiling report, you can open the report in browser with JSON viewer report. Or you can run the following command:
 
 ```bash
-bundle exec runtime_profiler view ~/the-rails-app/tmp/runtime-profiling-51079-1521371428.json
+bundle exec runtime_profiler view tmp/rp-124094-1608308786.json
 ```
 
-### view options
+#### view options
 
 Here are the command line options for `runtime_profiler view` command.
 
@@ -97,9 +137,9 @@ $ bundle exec runtime_profiler view --help
         ROUNDING is integer value. Used in rounding runtimes. Default is 4.
 ```
 
-## Configurations
+### Configurations
 
-All the configurable variables and their defaults are listed below. These configurations can be put in the `config/initializers` folder of your Rails application.
+All the configurable variables and their defaults are listed below. There is no one correct place where to put these configurations. It can be inside `config/initializers` folder of your Rails application. Or if you are using test to profile, it can be in the last part of `spec/spec_helper.rb`.
 ```ruby
 RuntimeProfiler.output_path = File.join(Rails.root.to_s, 'tmp')
 RuntimeProfiler.instrumented_constants = [User]
