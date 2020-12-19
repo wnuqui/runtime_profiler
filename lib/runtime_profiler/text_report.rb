@@ -175,7 +175,7 @@ module RuntimeProfiler
       instrumented_sql_calls = sort(instrumented_sql_calls, false)
 
       table = Terminal::Table.new do |t|
-        t.headings = ['Count', 'Total Runtime (ms)', 'Average Runtime (ms)', 'SQL Query', 'Source']
+        t.headings = ['SQL Query', 'Count', 'Total Runtime (ms)', 'Average Runtime (ms)', 'Source']
 
         instrumented_sql_calls.each_with_index do |row, index|
           chopped_sql       = wrap_text(row['sql'], sql_width)
@@ -196,7 +196,7 @@ module RuntimeProfiler
             query         = row['sql'].length > line  ? chopped_sql[line]     : ''
 
             t.add_row []
-            t.add_row [count, total_runtime, average, query, source]
+            t.add_row [query, count, total_runtime, average, source]
           end
 
           t.add_row []
