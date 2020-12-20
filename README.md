@@ -15,6 +15,7 @@ Check which part of your Rails application is causing slow response time. **runt
     - [Examples](#examples)
   - [Viewing Profiling Result](#viewing-profiling-result)
     - [view Options](#view-options)
+  - [Screenshot](#screenshot)
   - [Configurations](#configurations)
 - [Development](#development)
 - [Contributing](#contributing)
@@ -136,6 +137,12 @@ $ bundle exec runtime_profiler view --help
     --rounding ROUNDING
         ROUNDING is integer value. Used in rounding runtimes. Default is 4.
 ```
+
+### Screenshot
+
+<p align="center">
+  <img src="rp_view_only_methods_full_details.png">
+</p>
 
 ### Configurations
 
