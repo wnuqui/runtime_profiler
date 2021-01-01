@@ -39,7 +39,7 @@ module RuntimeProfiler
 
     def prepare_methods_to_instrument
       instrumented_constants.flatten
-                            .each { |constant| MethodMeter.observe(constant) }
+                            .each { |constant| MethodMeter.observe(constant, RuntimeProfiler.excepted_methods) }
     end
 
     def save_instrumentation_data

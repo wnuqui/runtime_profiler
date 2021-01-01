@@ -26,6 +26,10 @@ module RuntimeProfiler
     end
   end
 
+  config_accessor :excepted_methods do
+    {}
+  end
+
   class << self
     def configure
       begin
