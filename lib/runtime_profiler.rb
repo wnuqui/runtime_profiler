@@ -27,7 +27,7 @@ module RuntimeProfiler
   end
 
   config_accessor :excepted_methods do
-    {}
+    []
   end
 
   class << self
