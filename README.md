@@ -152,6 +152,8 @@ RuntimeProfiler.output_path = File.join(Rails.root.to_s, 'tmp')
 RuntimeProfiler.instrumented_constants = [User]
 RuntimeProfiler.instrumented_paths = %w(app lib)
 RuntimeProfiler.instrumented_sql_commands = %w(SELECT INSERT UPDATE DELETE)
+# Useful when you want to exclude in profiling specific method(s) from framework/library being used
+RuntimeProfiler.excepted_methods = [:attribute_type_decorations, :_validators, :defined_enums]
 ```
 
 ## Development
