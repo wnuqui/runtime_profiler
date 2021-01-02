@@ -1,5 +1,5 @@
 module RuntimeProfiler
-  class InstrumentationData
+  class Data
     attr_reader :controller_data, :sql_data
 
     def initialize(controller_data: nil, sql_data: nil)
@@ -9,7 +9,7 @@ module RuntimeProfiler
 
     def persist!
       File.open(output_file, 'w') do |f|
-        f.write JSON.dump(instrumentation_data)
+        f.write JSON.dump(profiling_data)
       end
 
       puts "\n"
@@ -26,18 +26,18 @@ module RuntimeProfiler
       File.join(RuntimeProfiler.output_path, filename)
     end
 
-    def instrumented_api
+    def profiled_api
       return unless controller_data[:payload]
-      @instrumented_api ||= [
+      @profiled_api ||= [
         controller_data[:payload][:controller],
         controller_data[:payload][:action]
       ].join('#')
     end
 
-    def instrumentation_data
-      @instrumentation_data ||= {
-        instrumentation: {
-          instrumented_api: instrumented_api,
+    def profiling_data
+      @profiling_data ||= {
+        profiling: {
+          profiled_api: profiled_api,
           summary: {
                         db_runtime: controller_data[:db_runtime],
                       view_runtime: controller_data[:view_runtime],
@@ -49,16 +49,16 @@ module RuntimeProfiler
                     slowest_method: method_calls_data[:slowest_method],
               mostly_called_method: method_calls_data[:mostly_called_method]
           },
-          instrumented_sql_calls: sql_calls_data[:instrumented_sql_calls],
-          instrumented_methods: method_calls_data[:instrumented_methods],
-          instrumented_at: Time.now
+          profiled_sql_calls: sql_calls_data[:profiled_sql_calls],
+          profiled_methods: method_calls_data[:profiled_methods],
+          profiled_at: Time.now
         }
       }
     end
 
     def method_calls_data
       @method_calls_data ||= begin
-        instrumented_methods = {}
+        profiled_methods = {}
 
         # TODO: Group methods under a key and under an object
         MethodMeter.measurement.each do |measurement|
@@ -69,16 +69,16 @@ module RuntimeProfiler
 
               d[:method] = separator + object.second
 
-              if instrumented_methods[object.first]
-                instrumented_methods[object.first] << d
+              if profiled_methods[object.first]
+                profiled_methods[object.first] << d
               else
-                instrumented_methods[object.first] = [d]
+                profiled_methods[object.first] = [d]
               end
             end
           end
         end
 
-        instrumented_methods = instrumented_methods.inject({}) do |hash, (key, value)|
+        profiled_methods = profiled_methods.inject({}) do |hash, (key, value)|
           val = value.sort { |a, b| b[:total_runtime] <=> a[:total_runtime] }
           hash[key] = val
           hash
@@ -87,7 +87,7 @@ module RuntimeProfiler
         slowest_method = {total_runtime: 0}
         mostly_called_method = {total_calls: 0}
 
-        instrumented_methods.each do |profiled_object_name, methods|
+        profiled_methods.each do |profiled_object_name, methods|
           # sort using `total_runtime` in DESC order
           _methods = methods.sort { |a, b| b[:total_runtime] <=> a[:total_runtime] }
           slowest = _methods[0]
@@ -110,7 +110,7 @@ module RuntimeProfiler
         end
 
         {
-          instrumented_methods: instrumented_methods,
+          profiled_methods: profiled_methods,
                 slowest_method: slowest_method,
           mostly_called_method: mostly_called_method
         }
@@ -119,7 +119,7 @@ module RuntimeProfiler
 
     def sql_calls_data
       @sql_calls_data ||= begin
-        instrumented_sql_calls = []
+        profiled_sql_calls = []
 
         slowest_sql = {total_runtime: 0}
         mostly_called_sql = {total_calls: 0}
@@ -140,7 +140,7 @@ module RuntimeProfiler
             slowest_sql[:source]        = slowest[1]
           end
 
-          instrumented_sql_calls << {
+          profiled_sql_calls << {
                       sql: value[:sql],
                  runtimes: runtimes,
               total_calls: total_calls,
@@ -162,9 +162,9 @@ module RuntimeProfiler
         end
 
         {
-          instrumented_sql_calls: instrumented_sql_calls.sort { |a, b| b[:max] <=> a[:max] },
-                 total_sql_calls: instrumented_sql_calls.map { |sql_call| sql_call[:total_calls] }.reduce(:+),
-          total_unique_sql_calls: instrumented_sql_calls.size,
+          profiled_sql_calls: profiled_sql_calls.sort { |a, b| b[:max] <=> a[:max] },
+                 total_sql_calls: profiled_sql_calls.map { |sql_call| sql_call[:total_calls] }.reduce(:+),
+          total_unique_sql_calls: profiled_sql_calls.size,
                      slowest_sql: slowest_sql,
                mostly_called_sql: mostly_called_sql
         }

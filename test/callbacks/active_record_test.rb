@@ -4,8 +4,8 @@ module RuntimeProfiler
   class ActiveRecordCallbackTest < Minitest::Test
     def test_should_track_sql_command_in_the_list
       RuntimeProfiler.configure do |config|
-        config.instrumented_sql_commands = %w[SELECT]
-        config.instrumented_paths = nil
+        config.profiled_sql_commands = %w[SELECT]
+        config.profiled_paths = nil
       end
 
       callback = Callback::ActiveRecord.new
@@ -24,8 +24,8 @@ module RuntimeProfiler
 
     def test_should_not_track_sql_command_not_in_the_list
       RuntimeProfiler.configure do |config|
-        config.instrumented_sql_commands = %w[INSERT]
-        config.instrumented_paths = nil
+        config.profiled_sql_commands = %w[INSERT]
+        config.profiled_paths = nil
       end
       callback = Callback::ActiveRecord.new
 
@@ -42,7 +42,7 @@ module RuntimeProfiler
     end
 
     def test_query_count_should_be_case_insensitive
-      RuntimeProfiler.instrumented_sql_commands = %w[INSERT SELECT]
+      RuntimeProfiler.profiled_sql_commands = %w[INSERT SELECT]
 
       callback = Callback::ActiveRecord.new
 
