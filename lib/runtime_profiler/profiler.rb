@@ -2,19 +2,19 @@
 
 require 'runtime_profiler/callbacks/active_record'
 require 'runtime_profiler/callbacks/action_controller'
-require 'runtime_profiler/instrumentation_data'
+require 'runtime_profiler/data'
 
 module RuntimeProfiler
   class Profiler
-    attr_accessor :instrumented_constants
+    attr_accessor :profiled_constants
 
-    def initialize(konstants)
-      self.instrumented_constants = konstants
+    def initialize(constants)
+      self.profiled_constants = constants
     end
 
-    def prepare_for_instrumentation
+    def prepare_for_profiling
       subscribe_to_event_notifications
-      prepare_methods_to_instrument
+      prepare_methods_to_profile
     end
 
     def subscribe_to_event_notifications
@@ -37,19 +37,19 @@ module RuntimeProfiler
       end
     end
 
-    def prepare_methods_to_instrument
-      instrumented_constants.flatten
+    def prepare_methods_to_profile
+      profiled_constants.flatten
                             .each { |constant| MethodMeter.observe(constant, RuntimeProfiler.excepted_methods) }
     end
 
-    def save_instrumentation_data
+    def save_profiling_data
       unsubscribe_to_event_notifications
 
-      instrumentation_data = RuntimeProfiler::InstrumentationData.new \
+      profiling_data = RuntimeProfiler::Data.new \
         controller_data: @action_controller_callback.controller_data,
         sql_data: @active_record_callback.data
 
-      instrumentation_data.persist!
+      profiling_data.persist!
     end
   end
 end

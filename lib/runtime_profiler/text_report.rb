@@ -95,12 +95,12 @@ module RuntimeProfiler
 
       if options.details == 'full'
         if only_methods?
-          print_instrumented_methods
+          print_profiled_methods
         elsif only_sqls?
-          print_instrumented_sql_calls
+          print_profiled_sql_calls
         else
-          print_instrumented_methods
-          print_instrumented_sql_calls
+          print_profiled_methods
+          print_profiled_sql_calls
         end
       end
     end
@@ -130,25 +130,25 @@ module RuntimeProfiler
       puts summary
     end
 
-    def print_instrumented_methods
-      instrumented_methods = []
+    def print_profiled_methods
+      profiled_methods = []
 
-      data['instrumentation']['instrumented_methods'].each do |profiled_object_name, methods|
-        _instrumented_methods = methods.map do |method|
+      data['profiling']['profiled_methods'].each do |profiled_object_name, methods|
+        _profiled_methods = methods.map do |method|
           method['method'] = [profiled_object_name, method['method']].join
           method
         end
-        instrumented_methods.concat(_instrumented_methods)
+        profiled_methods.concat(_profiled_methods)
       end
 
-      instrumented_methods = runtime_above(instrumented_methods) if options.runtime_above.presence > 0
-      instrumented_methods = calls_above(instrumented_methods) if options.calls_above.presence > 0
-      instrumented_methods = sort(instrumented_methods)
+      profiled_methods = runtime_above(profiled_methods) if options.runtime_above.presence > 0
+      profiled_methods = calls_above(profiled_methods) if options.calls_above.presence > 0
+      profiled_methods = sort(profiled_methods)
 
       table = Terminal::Table.new do |t|
         t.headings = ['Method', 'Total Runtime (ms)', 'Total Calls', 'Min (ms)', 'Max (ms)']
 
-        instrumented_methods.each_with_index do |row, index|
+        profiled_methods.each_with_index do |row, index|
           t.add_row [
             row['method'],
             row['total_runtime'].round(rounding),
@@ -156,28 +156,28 @@ module RuntimeProfiler
             row['min'].round(rounding),
             row['max'].round(rounding)
           ]
-          t.add_separator if index < instrumented_methods.size - 1
+          t.add_separator if index < profiled_methods.size - 1
         end
       end
 
       puts
       puts
-      puts "\e[1mINSTRUMENTED METHOD(s)\e[22m"
+      puts "\e[1mPROFILED METHOD(s)\e[22m"
       puts
       puts table
     end
 
-    def print_instrumented_sql_calls
-      instrumented_sql_calls = data['instrumentation']['instrumented_sql_calls']
+    def print_profiled_sql_calls
+      profiled_sql_calls = data['profiling']['profiled_sql_calls']
 
-      instrumented_sql_calls = runtime_above(instrumented_sql_calls) if options.runtime_above.presence > 0
-      instrumented_sql_calls = calls_above(instrumented_sql_calls) if options.calls_above.presence > 0
-      instrumented_sql_calls = sort(instrumented_sql_calls, false)
+      profiled_sql_calls = runtime_above(profiled_sql_calls) if options.runtime_above.presence > 0
+      profiled_sql_calls = calls_above(profiled_sql_calls) if options.calls_above.presence > 0
+      profiled_sql_calls = sort(profiled_sql_calls, false)
 
       table = Terminal::Table.new do |t|
         t.headings = ['SQL Query', 'Count', 'Total Runtime (ms)', 'Average Runtime (ms)', 'Source']
 
-        instrumented_sql_calls.each_with_index do |row, index|
+        profiled_sql_calls.each_with_index do |row, index|
           chopped_sql       = wrap_text(row['sql'], sql_width)
           source_list       = wrap_list(row['runtimes'].map { |runtime| runtime[1] }.uniq, sql_width - 15)
           average_runtime   = row['average'].round(rounding)
@@ -200,13 +200,13 @@ module RuntimeProfiler
           end
 
           t.add_row []
-          t.add_separator if index < instrumented_sql_calls.size - 1
+          t.add_separator if index < profiled_sql_calls.size - 1
         end
       end
 
       puts
       puts
-      puts "\e[1mINSTRUMENTED SQL(s)\e[22m"
+      puts "\e[1mPROFILED SQL(s)\e[22m"
       puts
       puts table
     end
@@ -256,7 +256,7 @@ module RuntimeProfiler
     end
 
     def details_template_data
-      summary = data['instrumentation']['summary']
+      summary = data['profiling']['summary']
 
       template_data = [
         summary['total_runtime'] ? summary['total_runtime'].round(rounding) : 'n/a',

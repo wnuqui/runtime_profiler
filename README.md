@@ -141,7 +141,7 @@ $ bundle exec runtime_profiler view --help
 ### Screenshot
 
 <p align="center">
-  <img src="rp_view_only_methods_full_details.png">
+  <img src="rp_view_command.png">
 </p>
 
 ### Configurations
@@ -149,9 +149,9 @@ $ bundle exec runtime_profiler view --help
 All the configurable variables and their defaults are listed below. There is no one correct place where to put these configurations. It can be inside `config/initializers` folder of your Rails application. Or if you are using test to profile, it can be in the last part of `spec/spec_helper.rb`.
 ```ruby
 RuntimeProfiler.output_path = File.join(Rails.root.to_s, 'tmp')
-RuntimeProfiler.instrumented_constants = [User]
-RuntimeProfiler.instrumented_paths = %w(app lib)
-RuntimeProfiler.instrumented_sql_commands = %w(SELECT INSERT UPDATE DELETE)
+RuntimeProfiler.profiled_constants = [User]
+RuntimeProfiler.profiled_paths = %w(app lib)
+RuntimeProfiler.profiled_sql_commands = %w(SELECT INSERT UPDATE DELETE)
 # Useful when you want to exclude in profiling specific method(s) from framework/library being used
 RuntimeProfiler.excepted_methods = [:attribute_type_decorations, :_validators, :defined_enums]
 ```

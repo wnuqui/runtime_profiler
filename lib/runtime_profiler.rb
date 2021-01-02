@@ -6,15 +6,15 @@ require 'method_meter'
 module RuntimeProfiler
   include ActiveSupport::Configurable
 
-  config_accessor :instrumented_constants do
+  config_accessor :profiled_constants do
     []
   end
 
-  config_accessor :instrumented_paths do
+  config_accessor :profiled_paths do
     %w[app lib]
   end
 
-  config_accessor :instrumented_sql_commands do
+  config_accessor :profiled_sql_commands do
     %w[SELECT INSERT UPDATE DELETE]
   end
 
@@ -43,11 +43,11 @@ module RuntimeProfiler
     def profile!(key, konstants)
       konstants = konstants.is_a?(Array) ? konstants : [konstants]
       profiler = Profiler.new(konstants)
-      profiler.prepare_for_instrumentation
+      profiler.prepare_for_profiling
 
       MethodMeter.measure!(key) { yield }
 
-      profiler.save_instrumentation_data
+      profiler.save_profiling_data
     end
   end
 end

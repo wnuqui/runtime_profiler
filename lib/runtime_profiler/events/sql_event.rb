@@ -10,8 +10,8 @@ module RuntimeProfiler
     end
 
     def recordable?
-      return true unless RuntimeProfiler.instrumented_sql_commands.respond_to?(:join)
-      instrumented_sql_matcher =~ sql
+      return true unless RuntimeProfiler.profiled_sql_commands.respond_to?(:join)
+      profiled_sql_matcher =~ sql
     end
 
     def total_runtime
@@ -41,12 +41,12 @@ module RuntimeProfiler
       @sql ||= @payload[:sql].dup
     end
 
-    def instrumented_sql_matcher
-      @instrumented_sql_matcher ||= /\A#{RuntimeProfiler.instrumented_sql_commands.join('|')}/i
+    def profiled_sql_matcher
+      @profiled_sql_matcher ||= /\A#{RuntimeProfiler.profiled_sql_commands.join('|')}/i
     end
 
     def trace_path_matcher
-      @trace_path_matcher ||= %r{^(#{RuntimeProfiler.instrumented_paths.join('|')})\/}
+      @trace_path_matcher ||= %r{^(#{RuntimeProfiler.profiled_paths.join('|')})\/}
     end
 
     def sanitize_trace!(trace)
@@ -59,7 +59,7 @@ module RuntimeProfiler
 
       Rails.backtrace_cleaner.remove_silencers!
 
-      if RuntimeProfiler.instrumented_paths.respond_to?(:join)
+      if RuntimeProfiler.profiled_paths.respond_to?(:join)
         Rails.backtrace_cleaner.add_silencer do |line|
           line !~ trace_path_matcher
         end
