@@ -1,4 +1,4 @@
-# require 'method_profiler'
+require 'method_meter'
 
 require 'runtime_profiler/callbacks/active_record'
 require 'runtime_profiler/callbacks/action_controller'
@@ -10,14 +10,22 @@ module RuntimeProfiler
 
     def initialize(constants)
       self.profiled_constants = constants
+      prepare_for_profiling
     end
 
+    def profile!(key)
+      MethodMeter.measure!(key) { yield }
+      save_profiling_data
+    end
+
+    private
+
     def prepare_for_profiling
-      subscribe_to_event_notifications
+      subscribe_to_rails_event_notifications
       prepare_methods_to_profile
     end
 
-    def subscribe_to_event_notifications
+    def subscribe_to_rails_event_notifications
       @subscribers = []
 
       @active_record_callback = Callback::ActiveRecord.new
@@ -31,19 +39,20 @@ module RuntimeProfiler
                       .subscribe('process_action.action_controller', @action_controller_callback)
     end
 
-    def unsubscribe_to_event_notifications
+    def unsubscribe_to_rails_event_notifications
       @subscribers.each do |subscriber|
         ActiveSupport::Notifications.unsubscribe(subscriber)
       end
     end
 
     def prepare_methods_to_profile
-      profiled_constants.flatten
-                            .each { |constant| MethodMeter.observe(constant, RuntimeProfiler.excepted_methods) }
+      profiled_constants
+        .flatten
+        .each { |constant| MethodMeter.observe(constant, RuntimeProfiler.excepted_methods) }
     end
 
     def save_profiling_data
-      unsubscribe_to_event_notifications
+      unsubscribe_to_rails_event_notifications
 
       profiling_data = RuntimeProfiler::Data.new \
         controller_data: @action_controller_callback.controller_data,

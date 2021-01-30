@@ -1,7 +1,6 @@
 require 'active_support'
 
 require 'runtime_profiler/profiler'
-require 'method_meter'
 
 module RuntimeProfiler
   include ActiveSupport::Configurable
@@ -40,14 +39,10 @@ module RuntimeProfiler
       yield self if block_given?
     end
 
-    def profile!(key, konstants)
-      konstants = konstants.is_a?(Array) ? konstants : [konstants]
-      profiler = Profiler.new(konstants)
-      profiler.prepare_for_profiling
-
-      MethodMeter.measure!(key) { yield }
-
-      profiler.save_profiling_data
+    def profile!(key, constants)
+      constants = constants.is_a?(Array) ? constants : [constants]
+      profiler = Profiler.new(constants)
+      profiler.profile!(key) { yield }
     end
   end
 end
