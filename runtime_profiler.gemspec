@@ -28,6 +28,6 @@ Gem::Specification.new do |spec|
   spec.add_runtime_dependency 'commander'
   spec.add_runtime_dependency 'defined_methods'
   spec.add_runtime_dependency 'hirb'
-  spec.add_runtime_dependency 'method_meter'
+  spec.add_runtime_dependency 'method_meter', '>= 0.4.3'
   spec.add_runtime_dependency 'terminal-table'
 end

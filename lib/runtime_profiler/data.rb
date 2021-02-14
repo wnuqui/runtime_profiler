@@ -61,19 +61,17 @@ module RuntimeProfiler
         profiled_methods = {}
 
         # TODO: Group methods under a key and under an object
-        MethodMeter.measurement.each do |measurement|
-          measurement.each_pair do |key, data|
-            data.each do |d|
-              object = d[:method].split(separator = '.')
-              object = d[:method].split(separator = '#') if object.length == 1
+        MethodMeter.measurement.each_pair do |key, data|
+          data.each do |d|
+            object = d[:method].split(separator = '.')
+            object = d[:method].split(separator = '#') if object.length == 1
 
-              d[:method] = separator + object.second
+            d[:method] = separator + object.second
 
-              if profiled_methods[object.first]
-                profiled_methods[object.first] << d
-              else
-                profiled_methods[object.first] = [d]
-              end
+            if profiled_methods[object.first]
+              profiled_methods[object.first] << d
+            else
+              profiled_methods[object.first] = [d]
             end
           end
         end
